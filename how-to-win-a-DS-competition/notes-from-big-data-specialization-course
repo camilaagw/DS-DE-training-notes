@@ -1,9 +1,16 @@
 # Recap of main ML algorithms
 
-* Linear models: Split space into 2 subspaces with a hyperplane (Ex.: Logistic Reg., SVM). Good for sparse, high dimensional data, where there are linear dependencies.
-* Tree-based methods: Decision tree is the main construction block. Uses divide and conquer approach to recursively divide the space into subspaces (or boxes). In regression tasks aproximates points in the boxes with a constant. A bad choise when data has linear dependencies.
-* kNN-based methods: Points close to each other are likely to have the same labels. Heavily rely on how to measure points "closeness"
-* Neural Networks: Produce smooth separating curve (in contrast to decision trees).
+**Linear models**
+ Split space into 2 subspaces with a hyperplane (Ex.: Logistic Reg., SVM). Good for sparse, high dimensional data, where there are linear dependencies.
+
+**Tree-based methods**
+Decision tree is the main construction block. Uses divide and conquer approach to recursively divide the space into subspaces (or boxes). In regression tasks aproximates points in the boxes with a constant. A bad choise when data has linear dependencies.
+
+**kNN-based methods**
+Points close to each other are likely to have the same labels. Heavily rely on how to measure points "closeness"
+
+**Neural Networks** 
+Produce smooth separating curve (in contrast to decision trees).
 
 No free lunch theorem: There is no method which outperforms all others for all tasks. There is no "silver bullet algorithm"
 
@@ -51,9 +58,51 @@ Examples:
 
 ## Categorical and ordinal features
 
+**Label encoding**
+Map each category to an unique value. Useful for tree-based models. Not always useful for linear models or NN unless the values assigned are correlated with the target. Types:
+- Alphabetical order
+- Order or apearance
+- Meaningful order (in case the categorical variable is ordinal)
+- Frequency encoding: Map each category to its frequecy. For multiple categories with the same frequency we can use a rank operation 
+
+**One-hot encoding**
+Creates a new column for every category. Works better with non-tree-based models than with tree-based ones due to the explosion in the number of features
+
+
 ## Datetime and coordinates
+
+### Datetime 
+
+1. Periodicity: Day number in week, month, season, year, second, minute, hour.
+2. Time since
+	a. Row-independent moment
+	For example: since 00:00:00 UTC, 1 January 1970;
+	b. Row-dependent important moment
+	Number of days left until next holidays/ time passed
+	after last holiday.
+3. Difference between dates: datetime_feature_1 - datetime_feature_2
+
+### Coordinates
+
+Ideas:
+- Calculate distance to the nearest shop, hospital, school, etc
+- Organize data into clusters and add distance to the center of clusters
+- Compute aggregated stats per area: Price per m2, number of flats
+with tree based models, you can add rotations of the coordinates as new features
 
 ## Handling missing values
 
+Different methods to fill the missing vaues: 
+- Replace them by other value (999, -1) (decision-based models)
+- Mean, median  (linear models, NN,  KNN)
+- Recontruct values (time series)
+- Add Isnull feature
 
+Note 1 : Avoid filling missing values before feature generation 
+Note 2: Finding hidden missing values encoded as a numerial value: Plot histogram and look for abnormal peaks!
+Note 3: XgBoost can handle NaN
+
+# Exploratory data analysis
+
+Visualization: Patterns lead to questions (or hypothesis) and hypothesis can be supported by graphics
 
