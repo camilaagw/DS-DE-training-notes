@@ -104,5 +104,70 @@ Note 3: XgBoost can handle NaN
 
 # Exploratory data analysis
 
-Visualization: Patterns lead to questions (or hypothesis) and hypothesis can be supported by graphics
+General advice: 
+- Get domaing knowledge
+- Check if the data is intuitive and consistent with its definition
+- It is crucial to understand how the data was generated to set up a proper validation scheme. For instance if the distribution of the test set is different from the training set, we cannot validate our model with a part of the training set
+- Visualization is important: Patterns lead to questions (or hypothesis) and hypothesis can be supported by graphics
+
+Useful Pandas methods: `df.types`, `df.info()`, `df.describe()`, `x._value_counts()`, `x.isnull()`
+
+Useful visualization tools:
+- Histograms (be careful with bins!):  `plt.hist(x)`
+- Plot index vs value: `plt.plot(x,'.')` 
+- Plot index vs value colored by target value: `plt.scatter(range(len(x)),x ,c=y)`
+- Exploring features relations: `plt.scatter(x1,x2)`, `pd.scatter_matrix(df)`
+- Correlation matrices: `plt.matshow()` (TODO: add clustering example)
+- Plot mean values of individual features: `df.mean().sort_values().plot(style='.')
+
+## Dataset cleaning and other things to check
+
+- Remove features with zero variance in training set
+- Check for dupllicated rows (check if same rows have same label)
+- Check for duplicated columns:
+```
+for col in categorical_cols:
+	train_test[col] = train_test[col].factorize()[0]
+
+train_test.T.drop_duplicates
+```
+
+# Validation strategies
+
+There are three main validation strategies:
+1. Holdout (i.e. 70% for training, 30% for testing). Use if validation results and/or optimal parameters among different splits do not change "too much"
+2. KFold. Use if scores and optimal parameters differ for different splits.
+3. Leave One Out (iterate though every point in your data). Use if you have too little data.
+Stratification preserve the same target distribution over
+different folds
+
+Data slitting stategies:
+- Random-based splitting
+- Time-based splitting. Special case: Window moving validation.  
+- ID-based splitting
+
+Note: Ensure similar distributions between your validation set and the test set (In most cases, the reality!)
+
+### Specific advice for Kaggle competitions: 
+
+ If we have big dispersion of scores on validation stage, we should do extensive validation
+– Average scores from different KFold splits
+– Tune model on one split, evaluate score on the other
+
+If submission’s score do not match local validation score,we should
+– Check if we have too little data in public LB
+– Check if we overfitted
+– Check if we chose correct splitting strategy
+– Check if train/test have different distibutions
+
+Expect LB shuffle because of
+– Randomness
+– Little amount of data
+– Different public/private distributions
+
+
+# Metrics optimization
+
+# Advanced feature engineering
+
 
