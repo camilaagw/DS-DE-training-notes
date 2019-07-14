@@ -168,6 +168,22 @@ Expect LB shuffle because of
 
 # Metrics optimization
 
+## 1) Regression
+- MSE. Best constant: target mean 
+- RMSE. Best constant: target mean. More intuitive than MSE. It is not completely interchangeable for gradient-based methods as their gradients are not equal (there is a scaling factor)
+- R-squared: How much our model is better than the constant baseline.Best constant: target mean. MSE, RMSE, R-squared are the same from optimization perspective
+- MAE. Best constant: target median. Use it when you have big outliers in the data that you don't want to penalize much. The gradient is not defined when the prediction is perfect.
+- (R)MSPE: Mean Squared Percentage Error. Best constant: weighted target meann (objects with a small target value have higher weights)
+- MAPE: Mean Absolute Percentage Error. Best constant: weighted target median (objects with a small target value have higher weights)
+- (R)MSLE: Root Mean Square Logarithmic Error.
+
+
+## 2) Classification:
+- Accuracy: How frequently our class prediction is correct. Best constant: predict the most frequent class
+- LogLoss: Logloss strongly penalizes completely wrong answers. Best constant: set $a_1$ to frequency of $i-th$ class.
+- AUC ROC: Depends only on ordering of the predictions, not on absolute values. Best constant: All constants give same score. Random predictions lead to AUC = 0.5
+- Cohen’s (Quadratic weighted) Kappa: what accuracy would be on average, if we randomly permute our predictions
+
 # Advanced feature engineering
 
 
