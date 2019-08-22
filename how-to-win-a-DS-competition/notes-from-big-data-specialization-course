@@ -2,6 +2,7 @@
 
 **Linear models**
  Split space into 2 subspaces with a hyperplane (Ex.: Logistic Reg., SVM). Good for sparse, high dimensional data, where there are linear dependencies.
+ (Logistic regression: assumption that data samples are independently and identically distributed (so-called i.i.d assumption))
 
 **Tree-based methods**
 Decision tree is the main construction block. Uses divide and conquer approach to recursively divide the space into subspaces (or boxes). In regression tasks aproximates points in the boxes with a constant. A bad choise when data has linear dependencies.
@@ -168,22 +169,153 @@ Expect LB shuffle because of
 
 # Metrics optimization
 
-## 1) Regression
+## 1) Regression metrics
 - MSE. Best constant: target mean 
 - RMSE. Best constant: target mean. More intuitive than MSE. It is not completely interchangeable for gradient-based methods as their gradients are not equal (there is a scaling factor)
 - R-squared: How much our model is better than the constant baseline.Best constant: target mean. MSE, RMSE, R-squared are the same from optimization perspective
-- MAE. Best constant: target median. Use it when you have big outliers in the data that you don't want to penalize much. The gradient is not defined when the prediction is perfect.
-- (R)MSPE: Mean Squared Percentage Error. Best constant: weighted target meann (objects with a small target value have higher weights)
-- MAPE: Mean Absolute Percentage Error. Best constant: weighted target median (objects with a small target value have higher weights)
-- (R)MSLE: Root Mean Square Logarithmic Error.
+- MAE. Best constant: target median. Use it when you have big outliers in the data that you don't want to penalize much. Problem: The gradient is not defined when the prediction is perfect.
+- (R)MSPE: Mean Squared Percentage Error. Weighted version of MSE. Best constant: weighted target meann (objects with a small target value have higher weights)
+- MAPE: Mean Absolute Percentage Error. Weighted version of MAE. Best constant: weighted target median (objects with a small target value have higher weights)
+- (R)MSLE: Root Mean Square Logarithmic Error. Used in the same situation than MSPE and MAPE as it cares about relative errors. However it penalizes more lower predictions than higher ones.
 
 
-## 2) Classification:
+## 2) Classification metrics :
 - Accuracy: How frequently our class prediction is correct. Best constant: predict the most frequent class
-- LogLoss: Logloss strongly penalizes completely wrong answers. Best constant: set $a_1$ to frequency of $i-th$ class.
-- AUC ROC: Depends only on ordering of the predictions, not on absolute values. Best constant: All constants give same score. Random predictions lead to AUC = 0.5
-- Cohen’s (Quadratic weighted) Kappa: what accuracy would be on average, if we randomly permute our predictions
+- LogLoss: Logloss strongly penalizes completely wrong answers (remember that it looks at posterior probabilities). For example if we have a classifier assigning 0.4 score to an object of class 1, and other assigning 0.1, the later will be more penalized on this particular object. Best constant: set $a_i$ to frequency of $i-th$ class. TODO: when to use it?
+- AUC ROC: Depends only on ordering of the predictions, not on absolute values. Can be seen as a pairwise loss: probability of pair objects to be ordered in the right way. Best constant: All constants give same score. Random predictions lead to AUC = 0.5
+- Cohen’s (Quadratic weighted) Kappa: Uses a baseline accuracy (i.e. percentage of largest class) to normalize accuracy. Very similar to what R2 does with MSE. There are versions of the metric using weights.
+
+# General approaches for metrics optimization
+
+Target metric is what we want to optimize however ptimization loss is what model optimizes
+
+Just run the right model!
+- MSE, Logloss
+• Preprocess train and optimize another metric
+- MSPE, MAPE, RMSLE, ...
+• Optimize another metric, postprocess predictions
+- Accuracy, Kappa
+• Write custom loss function
+- Any, if you can
+
+Optimize another metric, use early stopping
+- Optimize metric M1, monitor metric M2. Stop when M2 score is the best
+
+# Regression metrics optimization
+
+**MSE**: 
+Can be found in many different libraries. Other names: L2 loss
+
+**MAE**: 
+Available only in some libraries. Similar to huber loss (Mix between MSE and MAE). Other names for MAE: L1, quantile loss
+
+**MSPE and MAPE**:
+Not commonly implemented. Options:
+- Use the fact that they are weighted versions of MSE and MAE and tune the parameter 'sample_weights' in our models when available. Use MSE/MAE to optimize. 
+- Re-sample the training set with the corresponding weights `df.sample(weights=sample_weights)` (See slides corresponding to this topic). Test set stays as it is. Use MSE/MAE to optimize. Usually one needs to resample many times and average the result.
+
+**RMSLE**:
+1) In the training set transform the target: $z_i=log(y_i+1)$. 
+2) Fit a model with MSE loss
+3) Transform the predictions back: $y_{pred}=exp(z_{pred_i}-1)$
+
+# Classification metrics optimization
+
+**LogLoss**:
+Can be found in many different libraries. Note that it requires model to output posterior probabilities (i.e. if we take all objects with score 0.8, 80% of them will have class 1 and 20% of them will have class 0). If not it's predictions should be calibrated using methods such as:
+- Platt scaling: Just fit Logistic Regression to your predictions (like in stacking)
+- Isotonic regression: Just fit Isotonic Regression to your predictions
+(like in stacking)
+- Stacking: Just fit XGBoost or neural net to your prediction and use Logloss 
+
+**Accuracy**:
+There is no easy way to optimize it (gradient is either 0 or inf). Recommendation: Fit any metric and tune treshold!
+
+**AUC**:
+Although the loss function of AUC has zero gradients almost everywhere, exactly as accuracy loss, there exists an algorithm to optimize AUC with gradient-based methods, and some models implement this algorithm
+
+**(Quadratic weighted) Kappa**:
+Optimize MSE (with soft predictions) and tune thresholds
 
 # Advanced feature engineering
+
+## Mean encoding
+Use them for categorical variables with a lot of different values.
+
+* Simplest case:  Encode each level of the categorical variable with the corresponding target mean:
+```
+means = x_train.groubpy(col).target.mean()
+train_new[col+'_mean_target'] = train_new[col].map(means)
+val_new[col+'_mean_target'] = val_new[col].map(means)
+```
+* Alternatives: $ln(Goods/Bads)*100$ (weight of evidence); count number of ones: $sum(target)$; $Goods - Bads$
+
+Why does it work? It gives some logical order when there are too many categories.
+When is it useful?  For algorithms like GBDT: one of the few downsides is its inability to handle high cardinality categorical variables, because trees have limited depth; with mean encodings, we can compensate for this limitation. One sign that may indicate the need for this encoding is to get better performance (without overfitting) for larger tree depths. This indicates trees need a huge number of splits to extract information from some variables
+
+
+### Validation/Regulatization
+
+It's got to be impeccable in order to avoid having leakages from the target variable. It needs regulatization. 
+
+1) CV loop inside training data: For a given data point, we don't want to use target variable of that data point. So we separate the data into K subsets (folds). To get the mean encoding for a particular subset, we don't use data points from that subset and estimate the encoding only on the rest of subsets. Usually decent results with 4-5 folds. Fill nans with global mean (check implementation on slides)
+
+2) Smoothing
+Based on this idea: if a category has a lot of values, then we can trust the mean encoding, but if category is rare it's the opposite. 
+$$/frac{mean(target)*nrows + globalmean*alpha}{nrows+alpha}$$
+It has hyper parameter alpha that controls the amount of regularization. When alpha is zero, we have no regularization, and when alpha approaches infinity everything turns into globalmean. In some sense alpha is equal to the category size we can trust.
+We can combine it with, for example, CV loop regularization. 
+
+3) Adding random noise: Meaning ecoding have better quality for the training data than for the test data. And by adding noise, we simply degrade the quality of encoding on training data. Pretty unstable and hard to make it work
+
+4) Sorting and calculating expanding mean
+We fix some sorting order of our data and use only rows from zero to $n-1$ to calculate encoding for row n (check implementation on slides). This method introduces the least amount of leakage from target variable and it requires no hyper parameter tuning. The only downside is that feature quality is not uniform. To overcome this, we can average models on encodings calculated from different data permutations. Built-in in CatBoost (check implementation on slides)
+
+Regression tasks
+
+
+Using target variable in different tasks. Regression,
+multiclass
+• Domains with many-to-many relations
+• Timeseries
+• Encoding interactions and numerical features
+
+
+time series
+ Time structure allows us to make a lot of complicated
+features.
+• Rolling statistics of target variable
+
+Interactions and numerical features
+Analyzing fitted model
+• Binning numeric and selecting interactions
+More statistics for regression tasks. Percentiles, std,
+distribution bins.
+• Introducing new information for one vs all classifiers in multi
+class tasks
+
+
+Correct validation reminder
+• Local experiments:
+‒ Estimate encodings on X_tr
+‒ Map them to X_tr and X_val
+‒ Regularize on X_tr
+‒ Validate model on X_tr/ X_val split
+• Submission:
+‒ Estimate encodings on whole Train data
+‒ Map them to Train and Test
+‒ Regularize on Train
+‒ Fit on Train
+
+
+End
+• Main advantages:
+‒ Compact transformation of categorical variables
+‒ Powerful basis for feature engineering
+• Disadvantages:
+‒ Need careful validation, there a lot of ways to overfit
+‒ Significant improvements only on specific datasets
+
+
 
 
