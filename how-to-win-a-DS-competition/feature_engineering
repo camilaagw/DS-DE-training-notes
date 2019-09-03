@@ -398,14 +398,12 @@ most of the times you can safely downcast it to 32-bits
 * Keep your research reproducible: Fix random seed
 * Use macros or your own libraries for frequent code (i.e. imports)
 
-###Notes snippets:
 
-![](feature_engineering.png)
+![sss](feature_engineering)
 
-![](modeling.png)
+Copy feature engineering:
 
-![](ensembling.png)
 
-###Useful links:
-https://github.com/Far0n/kaggletils
-https://www.dataquest.io/blog/jupyter-notebook-tips-tricks-shortcuts/
+Modeling:
+
+Ensembling:
