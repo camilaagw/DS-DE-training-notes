@@ -114,7 +114,7 @@ Useful visualization tools:
 - Plot index vs value (can show leakages): `plt.plot(x,'.')` 
 - Plot index vs value colored by target value: `plt.scatter(range(len(x)),x ,c=y)`
 - Exploring features relations: `plt.scatter(x1,x2)`, `pd.scatter_matrix(df)`
-- Correlation matrices: `plt.matshow()` (TODO: add clustering example)
+- Correlation matrices: `plt.matshow()` . Biclustering algorithms for sorting corrplots: https://scikit-learn.org/stable/auto_examples/bicluster/plot_spectral_biclustering.html
 - Plot mean values of individual features: `df.mean().sort_values().plot(style='.')
 
 **Dataset cleaning and other aspects to check**
