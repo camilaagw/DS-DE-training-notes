@@ -473,7 +473,7 @@ A form of weighted averaging of models where each model is built **sequentially*
 
 ####Weights-based Boosting
 Uses weights to indicate to the next model the samples (rows) with the highest prediction error (in absolute terms), and to put mode emphasis on them. We can see the weight as the number of times a certain sample should appear in the training set. Aim: maximize the focus on the samples where the previous models have done wrong. 
-<insert image here>
+<img src="xgboost_weights.png" >
 
 Weighted-based boosting parameters:
 * Learning rate (or shrinkage or eta) :every new model built we don't trust it 100%, only a little bit. This controls overfitting
@@ -485,8 +485,10 @@ $ prediction_n = pred_0*eta + pred_1*eta  + ... + pred_n*eta$
 	* LogitBoost - Good for logistic regression (Weka implementation)
 
 #### Residual-error-based Boosting
-For every samplerror is calculated, but not in absolute terms. The error becomes the new target variable. The prediction is the sum of initial prediction and new prediction(s).
-<insert image here>
+For every samplerror is calculated, but not in absolute terms. The error becomes the new target variable: 
+<img src="xgboost_residuals0.png" >
+The prediction is the sum of initial prediction and new prediction(s):
+<img src="xgboost_residuals.png" >
 
 Residual-error-based Boosting parameters:
 * Learning rate (or shrinkage or eta)
@@ -503,10 +505,54 @@ $ prediction_n = pred_0 + pred_1*eta  + ... + pred_n*eta$
 https://en.wikipedia.org/wiki/Random_forest#Bagging
 https://en.wikipedia.org/wiki/Bootstrap_aggregating
 ###Stacking
-TODO
+Making predictions of a number of (base) models in a hold-out set and then using a different (Meta) model to train on these predictions. The meta learner "knows" how well the models have done historically and uses this information to combine their predictions into the final one.
+
+In 1992 Wolpert introduced stacking. It involves:
+1. Splitting the train set into two disjoint sets
+2. Train several base learners on the first part
+3. Make predictions with the base learners on the second (validation) part
+4. Using the predictions from (3) as the inputs to train a higher level learner
+
+Example:
+<img src="stacking.png"  >
+
+
+**Things to be careful with**:
+* Set up proper validation with time series (don't use the future to predict the past)
+* Diversity is as important as base model performance
+* Diversity might come from:
+   * Different algorithms
+   * Different input features
+* Performance plateauing after N models
+* Meta model is normally modes (i.e. linear/logistic regression, RF with a low depth)
+
 
 ###StackNet
-TODO
+Scalable meta modeling methodology that utilizes stacking to combine multiple models in a neural network architecture of multiple levels.
+
+Example from the Homesite competition:
+<img src="stacknet.png">
+
+**Ideas behind it:**
+- In a neural network every node is a simple linear model (like linear regression) with some non linear transformation
+- Instead of a linear model we could use any model
+- How to train?
+    - We can not use BP (not all models are differentiable
+    - We use stacking to link each model /node with target
+- To extend to many levels we can use a kfold paradigm
+- No epochs, different connections instead
+
+**First level tips:**
+
+<img src="stacknet_tips1.png">
+
+**Subsequent level tips:**
+
+<img src="stacknet_tips2.png">
+
+#####Implementations: 
+https://github.com/kaz-Anova/StackNet
+https://github.com/reiinakano/xcessiv
 
 #General advice
 
