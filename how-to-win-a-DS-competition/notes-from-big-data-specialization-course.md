@@ -428,7 +428,7 @@ Logistic Regression/ LinearRegression + regularizers
 SGDClassifier/SGDRegressor
 
 *Pro-underfitting parameters:*
-- C, alpha, lambda: start with a very small value and increase it
+- C, alpha, lam bda: start with a very small value and increase it
 - L1/L2, use L1 for feature selection
 
 
@@ -439,6 +439,10 @@ In essense, it is combining different machine learning models to get a more powe
 * Averaging (or blending) of different models
 * Weighted averaging of different models
 * Conditional averaging : if < condition  > use model A, else use model B
+* Simple convex mix:
+$$
+mix= \alpha\cdot\text{linreg_prediction}+(1-\alpha)\cdot\text{lgb_prediction}
+$$
 
 More advanced methods are bagging, boosting and stacking. They are described below.
 
