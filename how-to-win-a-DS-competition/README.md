@@ -115,7 +115,7 @@ Useful visualization tools:
 - Plot index vs value colored by target value: `plt.scatter(range(len(x)),x ,c=y)`
 - Exploring features relations: `plt.scatter(x1,x2)`, `pd.scatter_matrix(df)`
 - Correlation matrices: `plt.matshow()` . Biclustering algorithms for sorting corrplots: https://scikit-learn.org/stable/auto_examples/bicluster/plot_spectral_biclustering.html
-- Plot mean values of individual features: `df.mean().sort_values().plot(style='.')`
+- Plot mean values of individual features: `df.mean().sort_values().plot(style='.')
 
 **Dataset cleaning and other aspects to check**
 
@@ -432,7 +432,7 @@ SGDClassifier/SGDRegressor
 - L1/L2, use L1 for feature selection
 
 
-# X. Ensemble modeling
+#X. Ensemble modeling
 
 In essense, it is combining different machine learning models to get a more powerful prediction.The most basic ensemble methods include:
 
@@ -446,7 +446,7 @@ $$
 
 More advanced methods are bagging, boosting and stacking. They are described below.
 
-### Bagging
+###Bagging
 Averaging slightly different versions of the same model to improve prediction power (i.e. Random Forest). Also called "bootstrap aggregating".
 
 *Assumption: Models are independent of each other.*
@@ -470,14 +470,14 @@ Bagging helps to decrease the variance of the model, without increasing the bias
 
 
 
-### Boosting
+###Boosting
 
 A form of weighted averaging of models where each model is built **sequentially** by taking into account the past model performance. Note that models *are not independent of each other*.
 
 
-#### Weights-based Boosting
+####Weights-based Boosting
 Uses weights to indicate to the next model the samples (rows) with the highest prediction error (in absolute terms), and to put mode emphasis on them. We can see the weight as the number of times a certain sample should appear in the training set. Aim: maximize the focus on the samples where the previous models have done wrong. 
-<img src="img/xgboost_weights.png" >
+<img src="xgboost_weights.png" >
 
 Weighted-based boosting parameters:
 * Learning rate (or shrinkage or eta) :every new model built we don't trust it 100%, only a little bit. This controls overfitting
@@ -490,9 +490,9 @@ $ prediction_n = pred_0*eta + pred_1*eta  + ... + pred_n*eta$
 
 #### Residual-error-based Boosting
 For every samplerror is calculated, but not in absolute terms. The error becomes the new target variable: 
-<img src="img/xgboost_residuals0.png" >
+<img src="xgboost_residuals0.png" >
 The prediction is the sum of initial prediction and new prediction(s):
-<img src="img/xgboost_residuals.png" >
+<img src="xgboost_residuals.png" >
 
 Residual-error-based Boosting parameters:
 * Learning rate (or shrinkage or eta)
@@ -518,7 +518,7 @@ In 1992 Wolpert introduced stacking. It involves:
 4. Using the predictions from (3) as the inputs to train a higher level learner
 
 Example:
-<img src="img/stacking.png"  >
+<img src="stacking.png"  >
 
 
 **Things to be careful with**:
@@ -535,7 +535,7 @@ Example:
 Scalable meta modeling methodology that utilizes stacking to combine multiple models in a neural network architecture of multiple levels.
 
 Example from the Homesite competition:
-<img src="img/stacknet.png">
+<img src="stacknet.png">
 
 **Ideas behind it:**
 - In a neural network every node is a simple linear model (like linear regression) with some non linear transformation
@@ -548,11 +548,11 @@ Example from the Homesite competition:
 
 **First level tips:**
 
-<img src="img/stacknet_tips1.png">
+<img src="stacknet_tips1.png">
 
 **Subsequent level tips:**
 
-<img src="img/stacknet_tips2.png">
+<img src="stacknet_tips2.png">
 
 #####Implementations: 
 https://github.com/kaz-Anova/StackNet
@@ -579,9 +579,9 @@ most of the times you can safely downcast it to 32-bits
 
 ###Notes snippets:
 
-<img src="img/feature_engineering.png"  width="1000"/>
-<img src="img/modeling.png"  width="530"/>
-<img src="img/ensembling.png"  width="500"/>
+<img src="feature_engineering.png"  width="1000"/>
+<img src="modeling.png"  width="530"/>
+<img src="ensembling.png"  width="500"/>
 
 
 ###Useful links:
