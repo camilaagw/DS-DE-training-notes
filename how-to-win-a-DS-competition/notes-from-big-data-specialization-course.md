@@ -135,7 +135,7 @@ train_test.T.drop_duplicates
 
 
 ###Interactions
-Concatenated categories, multiplication or division of numerical features. Examples: click rates, price per $m^2$,  calculated distances with Pytagoras theorem. These features are beneficial for methods such as GBT as they experience dificultiexs with approximations of multiplications and divisions
+Concatenated categories, multiplication or ratios of numerical features. Examples: click rates, price per $m^2$,  calculated distances with Pytagoras theorem. These features are beneficial for methods such as GBT as they experience dificultiexs with approximations of multiplications and divisions
 
 * We have a lot of possible interactions − N*N for  features. Even more if use several types in interactions
 * Need to reduce its’ number by
@@ -147,7 +147,9 @@ Concatenated categories, multiplication or division of numerical features. Examp
 ### Fractional part 
 Fom 5.99, 0.99 is the factional part. Useful for price variables, for instance
 
-### Statistics of groups
+### Summary statistics 
+Summary statistics (mean, median, mode, min, max, std) for each group of similar records, e.g. all male customers between the ages of 32 and 44 would get their own set of summary stats. Can be also applied on rolling time window, e.g. the number of purchases a customer made in the last 30 days. 
+
 For example, for a CTR task (which involves adds in different pages seen by different users) one can calculate:
 * The lowest and highest prices of adds grouping by user and page
 * How many pages user has visited 
@@ -160,6 +162,12 @@ What if there is no features to use groupby on? We can use grouping operations o
 * Average price per square meter in 500m, 1000m,..
 * Number of schools/supermarkets/parking lots in 500m, 1000m,..
 * Distance to closest subway station or gym, etc.
+
+### Binning
+Manually creating categories from continuous variables. E.g. classify all customers as short, medium, tall and very tall may be helpful.
+
+### KNN 
+Using records in the training set to produce a kNN feature that is fed into another model
 
 ### Matrix factorization
 General approach for dimensionality reduction and feature extracting. For example, can be of great use on non-curated categories. It is  is similar in spirit to linear models, so can use the same transformation tricks, such as $log(x+1)$
@@ -508,7 +516,7 @@ $ prediction_n = pred_0 + pred_1*eta  + ... + pred_n*eta$
 
 https://en.wikipedia.org/wiki/Random_forest#Bagging
 https://en.wikipedia.org/wiki/Bootstrap_aggregating
-###Stacking
+### Stacking
 Making predictions of a number of (base) models in a hold-out set and then using a different (Meta) model to train on these predictions. The meta learner "knows" how well the models have done historically and uses this information to combine their predictions into the final one.
 
 In 1992 Wolpert introduced stacking. It involves:
@@ -531,7 +539,7 @@ Example:
 * Meta model is normally modes (i.e. linear/logistic regression, RF with a low depth)
 
 
-###StackNet
+### StackNet
 Scalable meta modeling methodology that utilizes stacking to combine multiple models in a neural network architecture of multiple levels.
 
 Example from the Homesite competition:
@@ -554,11 +562,11 @@ Example from the Homesite competition:
 
 <img src="img/stacknet_tips2.png">
 
-#####Implementations: 
+##### Implementations: 
 https://github.com/kaz-Anova/StackNet
 https://github.com/reiinakano/xcessiv
 
-#General advice
+# General advice
 
 * Do basic preprocessing and convert csv/txt files into
 hdf5/npy for much faster loading
@@ -577,13 +585,31 @@ most of the times you can safely downcast it to 32-bits
 * Keep your research reproducible: Fix random seed
 * Use macros or your own libraries for frequent code (i.e. imports)
 
-###Notes snippets:
+### Notes snippets:
 
 <img src="img/feature_engineering.png"  width="1000"/>
 <img src="img/modeling.png"  width="530"/>
 <img src="img/ensembling.png"  width="500"/>
 
 
-###Useful links:
+### Useful links:
 https://github.com/Far0n/kaggletils
 https://www.dataquest.io/blog/jupyter-notebook-tips-tricks-shortcuts/
+
+### Python tools
+- Pytables: Used for managing HDFS databases
+- HDF5: Used to store and manipulate data
+- Scipy: Algorithms to use with Numpy
+- HDFS: C/C++ wrapper for Hadoop
+- SQLAlchemy: Python SQL toolkit
+- pyMySQL: MySQL connector
+- Theano: Deep Learning
+- Lasagne: Build and train NN with Theano
+- Keras: High level NN API
+- Airflow/Luigi: Data Engineering tools
+- PyBrain: Algorithms for ML
+- Redis: Redis access libraries
+- Dask: Parallelism tool
+- Sympy: Symbolic Math
+- Pattern: NPL
+
