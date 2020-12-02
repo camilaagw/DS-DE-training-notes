@@ -1,3 +1,5 @@
-# Data Science Notes
+# Data Science - Data Engineering  notes
 
-In this repo I'm collecting all the notes from different courses, training, tutorials that are related to Data Science/Data Engineering. Solutions to the completed courses are kept in a private repository.
+Collection of notes from different courses, trainings, tutorials in the areas of Data Science and Data Engineering. 
+
+Solutions to the courses are held in a private repository, but do not hessitate to contact me in case you require some support :).

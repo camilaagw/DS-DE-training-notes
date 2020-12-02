@@ -1,10 +1,11 @@
+_**Notes from the course "How to Win a Data Science Competition: Learn from Top Kagglers" from Coursera: https://www.coursera.org/learn/competitive-data-science**_
+
 # I. Recap of main ML algorithms
 
 **Linear models**
  Linear models, split space into 2 subspaces with a hyperplane (Ex.: Linear Reg., Logistic Reg., Linear SVM). Good for sparse, high dimensional data, where there are linear dependencies.
  <a href=https://sebastianraschka.com/faq/docs/logistic_regression_linear.html> Why is logistic regression considered linear? </a>
  *Logistic regression assumption: Data samples are independently and identically distributed (so-called i.i.d assumption)*
-
 
 **Tree-based methods**
 Decision tree is the main construction block. Uses divide and conquer approach to recursively divide the space into subspaces (or boxes). In regression tasks aproximates points in the boxes with a constant. A bad choise when data has linear dependencies.
@@ -37,7 +38,7 @@ Tree-based models don't depend on feature scaling while Linear Models , kNN and 
 
 Types: 
 - Min-max scaling (distributions do not change)
-- Standar scaler (Goal: $mean=0$ and $std=1$)
+- Standard scaler (Goal: `mean=0` and `std=1`)
 
 
 #### Outliers treatment
@@ -61,9 +62,9 @@ Map each category to an unique value. Useful for tree-based models. Not always u
 
 Types:
 - Alphabetical order
-- Order or apearance
+- Order or appearance
 - Meaningful order (in case the categorical variable is ordinal)
-- Frequency encoding: Map each category to its frequecy in the data set. For multiple categories with the same frequency we can use a rank operation 
+- Frequency encoding: Map each category to its frequency in the data set. For multiple categories with the same frequency we can use a rank operation 
 
 #### One-hot encoding
 Creates a new column for every category. Works better with non-tree-based models than with tree-based ones due to the explosion in the number of features
@@ -77,26 +78,26 @@ Creates a new column for every category. Works better with non-tree-based models
 2. Time since
 	a. Row-independent moment: For example, since 00:00:00 UTC, 1 January 1970;
 	b. Row-dependent important moment: Number of days left until next holidays/ time passed after last holiday.
-3. Difference between dates: datetime_feature_1 - datetime_feature_2
+3. Difference between dates: `datetime_feature_1 - datetime_feature_2`
 
 #### Coordinates
 
 Ideas:
 - Calculate distance to the nearest shop, hospital, school, etc
 - Organize data into clusters and add distance to the center of clusters
-- Compute aggregated stats per area: Price per $m^2$, number of flats
+- Compute aggregated stats per area: Price per `m^2`, number of flats
 with tree based models, you can add rotations of the coordinates as new features
 
 ## D. Handling missing values
 
-Different methods to fill the missing vaues: 
+Different methods to fill the missing values: 
 - Replace them by other value (999, -1) (decision-based models)
 - Mean, median  (linear models, NN,  KNN)
-- Recontruct values (time series)
+- Reconstruct values (time series)
 - Add Isnull feature
 
 Note 1 : Avoid filling missing values before feature generation 
-Note 2: Finding hidden missing values encoded as a numerial value: Plot histogram and look for abnormal peaks!
+Note 2: Finding hidden missing values encoded as a numerical value: Plot histogram and look for abnormal peaks!
 Note 3: XgBoost can handle NaN
 
 # III. Exploratory data analysis
@@ -120,7 +121,7 @@ Useful visualization tools:
 **Dataset cleaning and other aspects to check**
 
 - Remove features with zero variance in training set
-- Check for dupllicated rows (check if same rows have same label)
+- Check for duplicated rows (check if same rows have same label)
 - Check for duplicated columns:
 ```
 for col in categorical_cols:
@@ -129,15 +130,14 @@ for col in categorical_cols:
 train_test.T.drop_duplicates
 ```
 
-
-
 # IV. Feature Engineering 
 
 
-###Interactions
-Concatenated categories, multiplication or ratios of numerical features. Examples: click rates, price per $m^2$,  calculated distances with Pytagoras theorem. These features are beneficial for methods such as GBT as they experience dificultiexs with approximations of multiplications and divisions
+### Interactions
+Concatenated categories, multiplication or division of numerical features. 
+Examples: click rates, price per `m^2`,  calculated distances with Pytagoras theorem. These features are beneficial for methods such as GBT as they experience dificultiexs with approximations of multiplications and divisions
 
-* We have a lot of possible interactions − N*N for  features. Even more if use several types in interactions
+* We have a lot of possible interactions − `N*N` for `N` features. Even more if use several types in interactions
 * Need to reduce its’ number by
    a. Dimensionality reduction
    b. Feature selection (for example, use random forest and calculate feature importance)
@@ -147,9 +147,7 @@ Concatenated categories, multiplication or ratios of numerical features. Example
 ### Fractional part 
 Fom 5.99, 0.99 is the factional part. Useful for price variables, for instance
 
-### Summary statistics 
-Summary statistics (mean, median, mode, min, max, std) for each group of similar records, e.g. all male customers between the ages of 32 and 44 would get their own set of summary stats. Can be also applied on rolling time window, e.g. the number of purchases a customer made in the last 30 days. 
-
+### Statistics of groups
 For example, for a CTR task (which involves adds in different pages seen by different users) one can calculate:
 * The lowest and highest prices of adds grouping by user and page
 * How many pages user has visited 
@@ -163,14 +161,8 @@ What if there is no features to use groupby on? We can use grouping operations o
 * Number of schools/supermarkets/parking lots in 500m, 1000m,..
 * Distance to closest subway station or gym, etc.
 
-### Binning
-Manually creating categories from continuous variables. E.g. classify all customers as short, medium, tall and very tall may be helpful.
-
-### KNN 
-Using records in the training set to produce a kNN feature that is fed into another model
-
 ### Matrix factorization
-General approach for dimensionality reduction and feature extracting. For example, can be of great use on non-curated categories. It is  is similar in spirit to linear models, so can use the same transformation tricks, such as $log(x+1)$
+General approach for dimensionality reduction and feature extracting. For example, can be of great use on non-curated categories. It is  is similar in spirit to linear models, so can use the same transformation tricks, such as `log(x+1)`
 
 * Can provide additional diversity: Good for ensembles
 * It is a lossy transformation. Its’ efficiency depends on:
@@ -178,7 +170,7 @@ General approach for dimensionality reduction and feature extracting. For exampl
     * Number of latent factors (Usually 5-100)
 
 Methods:
-* SVD and PCA: Standart tools for Matrix Factorization
+* SVD and PCA: Standard tools for Matrix Factorization
 * TruncatedSVD: Works with sparse matrices
 * Non-negative Matrix Factorization (NMF): Ensures that all latent factors are non-negative. Good for counts-like data. Males 
 
@@ -203,7 +195,7 @@ Also called **manifold learning**. It is one of the non-linear methods of dimens
 Facts from tSNE: 
 - Great tool for visualization
 - If the data has a explicit structure, it's likely to be reflected on the tSNE plot.
-- Hyperparameters tunning is extremely important: tSNE results extremely depends on its parameters. Use several projections with different perplexities (5-100).
+- Hyperparameters tuning is extremely important: tSNE results extremely depends on its parameters. Use several projections with different perplexities (5-100).
 - Can be considered as a method to obtain new features from data
 - Train and test set should be projected together rather than separately
 - Due to long running time, a reduction dimensionality approach can be done prior to the projection
@@ -221,30 +213,30 @@ train_new[col+'_mean_target'] = train_new[col].map(means)
 val_new[col+'_mean_target'] = val_new[col].map(means)
 ```
 * Alternatives: 
-    - $ln(Goods/Bads)*100$ (weight of evidence)
-    - Count number of ones: $sum(target)$
-    -  $Goods - Bads$
+    - `ln(Goods/Bads)*100` (weight of evidence)
+    - Count number of ones: `sum(target)`
+    -  `Goods - Bads`
 
 Why does it work? It gives some logical order when there are too many categories.
 When is it useful?  For algorithms like GBDT: one of the few downsides is its inability to handle high cardinality categorical variables, because trees have limited depth; with mean encodings, we can compensate for this limitation. One sign that may indicate the need for this encoding is to get better performance (without overfitting) for larger tree depths. This indicates trees need a huge number of splits to extract information from some variables
 
 
-**Validation/Regulatization**
+**Validation/Regularization**
 
 It's got to be impeccable in order to avoid having leakages from the target variable. It needs regulatization. 
 
 1) CV loop inside training data: For a given data point, we don't want to use target variable of that data point. So we separate the data into K subsets (folds). To get the mean encoding for a particular subset, we don't use data points from that subset and estimate the encoding only on the rest of subsets. Usually decent results with 4-5 folds. Fill nans with global mean (check implementation on slides).
 
 2) Smoothing
-Based on this idea: if a category has a lot of values, then we can trust the mean encoding, but if category is rare it's the opposite. 
-$/frac{mean(target)*nrows + globalmean*alpha}{nrows+alpha}$ ???
+Based on this idea: If a category has a lot of values, then we can trust the mean encoding, but if category is rare it's the opposite. 
+` (mean(target)*nrows + globalmean*alpha) / (nrows+alpha) `
 It has hyper parameter alpha that controls the amount of regularization. When alpha is zero, we have no regularization, and when alpha approaches infinity everything turns into globalmean. In some sense alpha is equal to the category size we can trust.
 We can combine it with, for example, CV loop regularization. 
 
-3) Adding random noise: Meaning ecoding will have a better quality for the training data than for the test data. And by adding noise, we simply degrade the quality of encoding on training data. Pretty unstable and hard to make it work, so it will take some time.
+3) Adding random noise: Meaning encoding will have a better quality for the training data than for the test data. And by adding noise, we simply degrade the quality of encoding on training data. Pretty unstable and hard to make it work, so it will take some time.
 
 4) Sorting and calculating expanding mean
-We fix some sorting order of our data and use only rows from zero to $n-1$ to calculate encoding for row n (check implementation on slides). This method introduces the least amount of leakage from target variable and it requires no hyper parameter tuning. The only downside is that feature quality is not uniform. To overcome this, we can average models on encodings calculated from different data permutations. Built-in in CatBoost (good for categorical features).
+We fix some sorting order of our data and use only rows from zero to `n-1` to calculate encoding for row n (check implementation on slides). This method introduces the least amount of leakage from target variable and it requires no hyper parameter tuning. The only downside is that feature quality is not uniform. To overcome this, we can average models on encodings calculated from different data permutations. Built-in in CatBoost (good for categorical features).
 
 
 **How to do mean encodings for other tasks?**
@@ -273,7 +265,7 @@ There are three main validation strategies:
 
 *Hint: Stratification preserves the same target distribution over different folds*
 
-Data slitting stategies:
+Data slitting strategies:
 - Random-based splitting
 - Time-based splitting. Special case: Window moving validation.  
 - ID-based splitting
@@ -290,7 +282,7 @@ If submission’s score do not match local validation score,we should
 - Check if we have too little data in public LB
 - Check if we overfitted
 - Check if we chose correct splitting strategy
-- Check if train/test have different distibutions
+- Check if train/test have different distributions
 
 Expect LB shuffle because of
 - Randomness
@@ -312,7 +304,7 @@ Expect LB shuffle because of
 
 ### Classification metrics :
 - **Accuracy**: How frequently our class prediction is correct. Best constant: predict the most frequent class
-- **LogLoss**: Logloss strongly penalizes completely wrong answers (remember that it looks at posterior probabilities). For example if we have a classifier assigning 0.4 score to an object of class 1, and other assigning 0.1, the later will be more penalized on this particular object. Best constant: set $a_i$ to frequency of $i-th$ class. TODO: when to use it?
+- **LogLoss**: Logloss strongly penalizes completely wrong answers (remember that it looks at posterior probabilities). For example if we have a classifier assigning 0.4 score to an object of class 1, and other assigning 0.1, the later will be more penalized on this particular object. Best constant: set `a_i` to frequency of `i-th` class. TODO: when to use it?
 - **AUC-ROC**: Depends only on ordering of the predictions, not on absolute values. Can be seen as a pairwise loss: probability of pair objects to be ordered in the right way. Best constant: All constants give same score. Random predictions lead to AUC = 0.5
 - **Cohen’s (Quadratic weighted) Kappa**: Uses a baseline accuracy (i.e. percentage of largest class) to normalize accuracy. Very similar to what R2 does with MSE. There are versions of the metric using weights.
 
@@ -338,9 +330,9 @@ Not commonly implemented. Options:
 - Re-sample the training set with the corresponding weights `df.sample(weights=sample_weights)` (See slides corresponding to this topic). Test set stays as it is. Use MSE/MAE to optimize. Usually one needs to resample many times and average the result.
 
 **RMSLE**:
-1) In the training set transform the target: $z_i=log(y_i+1)$. 
+1) In the training set transform the target: `z_i=log(y_i+1)`. 
 2) Fit a model with MSE loss
-3) Transform the predictions back: $y_{pred}=exp(z_{pred_i}-1)$
+3) Transform the predictions back: `y_{pred}=exp(z_{pred_i}-1)`
 
 ### Classification metrics optimization
 
@@ -382,7 +374,7 @@ Below you can find the most important parameters to tune for certain types of mo
 
 **GBDT (XGBoost, LightGBM, CatBoost)**
 
-Remember: These methods are building trees in a sequential maner in order to optimize a specific objective. Adding more trees might cause overfitting.
+Remember: These methods are building trees in a sequential manner in order to optimize a specific objective. Adding more trees might cause overfitting.
 
 *Pro-overfitting parameters:*
  - N_estimators
@@ -394,12 +386,12 @@ Remember: These methods are building trees in a sequential maner in order to opt
 - min_child_weight, lambda, alpha/min_data_in_leaf, lambda_l1, lambda_l2
 
 *Coupled parameters:*
-- eta, num_round / learning_rate, num_iterations. Move them in conjunction: $eta/alpha$ and $num\_round*alpha$. The lower the learning rate, the higher the number of iterations you´ll need to converge to a good solution and viceversa. Both parameters foster fitting in conjuction. Tip: also use early stopping
+- eta, num_round / learning_rate, num_iterations. Move them in conjunction: `eta/alpha` and `num_round*alpha`. The lower the learning rate, the higher the number of iterations you´ll need to converge to a good solution and viceversa. Both parameters foster fitting in conjuction. Tip: also use early stopping
 
 **Random Forest/ExtraTrees**
 
 Trees are independent of each other. Therefore adding more trees does not causes overfitting. The question in this case is, 
-*What number of trees is enought to get good results while not wasting too much time on training?* (Answer: Plot model performance vs number of trees)
+*What number of trees is enough to get good results while not wasting too much time on training?* (Answer: Plot model performance vs number of trees)
 
 *Pro-overfitting parameters*:
 - max_depth (Can be unlimited. The depth is usually higher in random forests than in GBDT)
@@ -424,7 +416,7 @@ Trees are independent of each other. Therefore adding more trees does not causes
 - Optimizers: SGD+Momentum
 - L2/L1 for weights
 - Dropout/Dropconnect
-- Static DropConnect (increase number of hidden units, but drop conections between input layer and hidden layer 1)
+- Static DropConnect (increase number of hidden units, but drop connections between input layer and hidden layer 1)
 
 *Others:*
 - Learning rate. Recommended starting value: 0.1 (huge!). Increase it proportionally to the batch size
@@ -442,17 +434,16 @@ SGDClassifier/SGDRegressor
 
 # X. Ensemble modeling
 
-In essense, it is combining different machine learning models to get a more powerful prediction.The most basic ensemble methods include:
+In essence, it is combining different machine learning models to get a more powerful prediction.The most basic ensemble methods include:
 
 * Averaging (or blending) of different models
 * Weighted averaging of different models
 * Conditional averaging : if < condition  > use model A, else use model B
-* Simple convex mix:
-$$
-mix= \alpha\cdot\text{linreg_prediction}+(1-\alpha)\cdot\text{lgb_prediction}
-$$
+* Simple convex mix: <img src="https://render.githubusercontent.com/render/math?math=mix= \alpha\cdot\text{linreg_prediction}+(1-\alpha)\cdot\text{lgb_prediction}">
+
 
 More advanced methods are bagging, boosting and stacking. They are described below.
+
 
 ### Bagging
 Averaging slightly different versions of the same model to improve prediction power (i.e. Random Forest). Also called "bootstrap aggregating".
@@ -466,7 +457,7 @@ There are two main sources of error:
 
 Bagging helps to decrease the variance of the model, without increasing the bias: by making different randomized models we ensure that the predictions have a lower variance, that they are more generalizable.
 
-**Parameters controling Bagging:**
+**Parameters controlling Bagging:**
 * Seed (every model is trained with a different seed)
 * Type of rows resampling: 
    - Subsampling (random sampling without replacement)
@@ -485,26 +476,29 @@ A form of weighted averaging of models where each model is built **sequentially*
 
 #### Weights-based Boosting
 Uses weights to indicate to the next model the samples (rows) with the highest prediction error (in absolute terms), and to put mode emphasis on them. We can see the weight as the number of times a certain sample should appear in the training set. Aim: maximize the focus on the samples where the previous models have done wrong. 
-<img src="img/xgboost_weights.png" >
+
+![](img/xgboost_weights.png)
 
 Weighted-based boosting parameters:
 * Learning rate (or shrinkage or eta) :every new model built we don't trust it 100%, only a little bit. This controls overfitting
-$ prediction_n = pred_0*eta + pred_1*eta  + ... + pred_n*eta$
+`prediction_n = pred_0*eta + pred_1*eta  + ... + pred_n*eta`
+
 * Number of estimators: use cross-validation to determine it. Note: Move learning rate with number of estimators - The more estimators we add to the ensemble, the lower the learning rate should be
-* Input model - can be anaything that accepts weights
+* Input model - can be anything that accepts weights
 * Sub boosting type: 
     * AdaBoost (Sklearn implementation)
 	* LogitBoost - Good for logistic regression (Weka implementation)
 
 #### Residual-error-based Boosting
-For every samplerror is calculated, but not in absolute terms. The error becomes the new target variable: 
-<img src="img/xgboost_residuals0.png" >
+For every sample the error is calculated, but not in absolute terms. The error becomes the new target variable: 
+![](img/xgboost_residuals0.png)
+
 The prediction is the sum of initial prediction and new prediction(s):
-<img src="img/xgboost_residuals.png" >
+![](img/xgboost_residuals.png)
 
 Residual-error-based Boosting parameters:
-* Learning rate (or shrinkage or eta)
-$ prediction_n = pred_0 + pred_1*eta  + ... + pred_n*eta$
+* Learning rate (or shrinkage or `eta`)
+`prediction_n = pred_0 + pred_1*eta  + ... + pred_n*eta`
 * Number of estimators (offset this with the right learning rate). Also use cross validating here
 * Row (sub) sampling 
 * Column (sub) sampling 
@@ -516,6 +510,7 @@ $ prediction_n = pred_0 + pred_1*eta  + ... + pred_n*eta$
 
 https://en.wikipedia.org/wiki/Random_forest#Bagging
 https://en.wikipedia.org/wiki/Bootstrap_aggregating
+
 ### Stacking
 Making predictions of a number of (base) models in a hold-out set and then using a different (Meta) model to train on these predictions. The meta learner "knows" how well the models have done historically and uses this information to combine their predictions into the final one.
 
@@ -526,7 +521,7 @@ In 1992 Wolpert introduced stacking. It involves:
 4. Using the predictions from (3) as the inputs to train a higher level learner
 
 Example:
-<img src="img/stacking.png"  >
+![](img/stacking.png)
 
 
 **Things to be careful with**:
@@ -543,7 +538,7 @@ Example:
 Scalable meta modeling methodology that utilizes stacking to combine multiple models in a neural network architecture of multiple levels.
 
 Example from the Homesite competition:
-<img src="img/stacknet.png">
+![](img/stacknet.png)
 
 **Ideas behind it:**
 - In a neural network every node is a simple linear model (like linear regression) with some non linear transformation
@@ -556,11 +551,12 @@ Example from the Homesite competition:
 
 **First level tips:**
 
-<img src="img/stacknet_tips1.png">
+![](img/stacknet_tips1.png)
 
 **Subsequent level tips:**
 
-<img src="img/stacknet_tips2.png">
+![](img/stacknet_tips2.png)
+
 
 ##### Implementations: 
 https://github.com/kaz-Anova/StackNet
@@ -586,10 +582,11 @@ most of the times you can safely downcast it to 32-bits
 * Use macros or your own libraries for frequent code (i.e. imports)
 
 ### Notes snippets:
+![](img/feature_engineering.png)
 
-<img src="img/feature_engineering.png"  width="1000"/>
-<img src="img/modeling.png"  width="530"/>
-<img src="img/ensembling.png"  width="500"/>
+![](img/modeling.png)
+
+![](img/ensembling.png)
 
 
 ### Useful links:
@@ -612,4 +609,3 @@ https://www.dataquest.io/blog/jupyter-notebook-tips-tricks-shortcuts/
 - Dask: Parallelism tool
 - Sympy: Symbolic Math
 - Pattern: NPL
-

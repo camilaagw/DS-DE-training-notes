@@ -1,46 +1,10 @@
-# Hive
+_**Notes from Big data specialization from Coursera: https://www.coursera.org/learn/big-data-analysis/home/welcome**_
 
-## Tips
-- Use partitioning, bucketing and sorting to improve performance query
-- Use built-in techniques to handle skewed data
-- Use built-in UDF (User Defined Functions), UDAF (Aggregate functions), UDTF (Table-generating functions)
-- Use columnar format for efficiencly space utilization (different compression algorithms can be applied to different types of data), fast data loading, fast query processing, strong adaptivity to highly dynamic workload patterns
-
-# Spark SQL
-
-- Time attributes: 
-
-```
-access_log_unixtime\
- .withColumn("timestamp",
- f.col("unixtime").astype("timestamp"))\
- .limit(5).toPandas()
- ```
-
-```
-access_log_ts.groupby("ip")\
- .agg(f.min("timestamp").alias("begin"),
- f.max("timestamp").alias("end"))\
- .select("ip", (f.datediff("end","begin")).alias("days_cnt"))\
- .limit(5).toPandas()
- ```
-
- - Window functions: first (), last(), lag(), lead(), row_number(), etc.
- ```
- user_window = Window.orderBy("unixtime").partitionBy("ip")
- access_log_ts.select("ip", "unixtime",
- f.row_number().over(user_window).alias("count"),
- f.lag("unixtime").over(user_window).alias("lag"),
- f.lead("unixtime").over(user_window).alias("lead"),
- )\
- .limit(5).toPandas()
- ```
-
-# Spark optimizations
+# I Spark optimizations
 
 ## Partitioning:
 
-- Default partitioner uses key hashing (other partitioner is range partitioner) 
+- Default partitioner uses key hashing (Alternative: range partitioner) 
 - Co-partitioned RDDs reduce the volume of the shuffle
 - Co-located RDDs don’t shuffle
 - Preserve the partitioner to avoid shuffles
@@ -67,10 +31,10 @@ True
 
 Transformations preserving partitioning: 
 
-- map(f, preservesPartitioning=False)
-- flatMap(f, preservesPartitioning=False)
-- mapPartitions(f, preservesPartitioning=False)
-- mapPartitionsWithIndex(f, preservesPartitioning=False)
+- map(f, preservePartitioning=True)
+- flatMap(f, preservePartitioning=True)
+- mapPartitions(f, preservePartitioning=True)
+- mapPartitionsWithIndex(f, preservePartitioning=True)
 - mapValues(f)
 - flatMapValues(f)
 
@@ -96,6 +60,11 @@ ranks.collect()
 True
 ```
 
+Tips for optimization:
+- Specify number of partitions when appropriate with partitionBy(n) or numPartitions argument
+- Use known partitioner to reduce shuffles
+- When creating an RDD from another, use `preservePartitioning=True` if the transformation does not change the keys
+
 ## Serialization: Transfer data and code
 
 Serialization is the process of translating data structures or object state into a format that can be stored (for example, in a file or memory buffer, or transmitted across a network connection link) and reconstructed later in the same or another computer environment
@@ -106,57 +75,30 @@ Serializers:
 
 ## Functions optimization
 
-- Don’t initialize objects inside your functions
-- Broadcast variables to reduce initialization overhead
-- Transform partitions, not rows
+- Avoid initializing objects inside your functions. Ideally, initialise objects only once on the driver 
+- Broadcast variables to reduce initialization overhead. Broadcasting distributes the object across executors
+- To reduce the number of function calls use `rdd.mapPartitions(myfunc)` instead of `rdd.map(myfunc)`. For this, you 
+will need to add a `for` loop inside `myfunc` and to replace `return` for `yield`:
 
 ```
 rdd.mapPartitions(myfunc)
 obj = sc.broadcast(SomeLongRunningInit())
 def myfunc(row_iter):
 	for row in row_iter:
-	yield obj.value.apply(row)
+	    yield obj.value.apply(row)
  ```
 
- ## Optimizing joins (Spark SQL)
-
-Join algorithms
-- Nested loop join: Universal algorithm. Slow! O(n*m)
-- Hash join: More efficient O(n + m). Only equijoin. Hash table uses memory ( can’t be used for huge tables)
-- Sort-merge join: Between hash join and nested join O(n * log(n) + m * log(m)).Can be used for huge tables. Not only equijoins. Join keys must be sortable
-
-Types of physical plans
-- Broadcast join: Broadcasts smaller dataframe. Perform map side join
-- Shuffle hash join: `spark.sql.join.preferSortMergeJoin` is False. One side is ”much smaller” than the other. Can build hash map
-- Sort-merge join: `spark.sql.join.preferSortMergeJoin` is True. Default join implementation. Keys must be sortable
-- Broadcast nested loop join
-
-`spark.sql.autoBroadcastJoinThreshold = 10485760`
-Configures the maximum size in bytes for a table that will be broadcast
-
-`spark.sql.shuffle.partitions = 200`
-Configures the number of partitions to use when shuffling data for joins or aggregations (Does not help with skewed data)
-
-`repartition(numPartitions, *cols)`
-Shuffles data uniformly
-
-Broadcast hint
-```
-from pyspark.sql.functions import broadcast
-df1.join(broadcast(df2), on="join_column")
-```
-What can happen if you try to use the broadcast hint with the huge table?
-- Out of memory error on the executor: Broadcasting has to use the memory of the executor to store the table. If there is not enough memory the application will fail.
-- Broadcast timeout: There is an option spark.sql.broadcastTimeout which is 300 seconds by default. If broadcasting takes more time the application will fail
-
+ 
 # Spark UDFs (Spark SQL)
 
 Using UDFs forces serialization. What are the alternative options?
 - pyspark.sql.functions
 - Hive UDFs/UDAFs
-- Scala or Java
+- Scala or Java (Extend Spark SQL via UDFs/UDAFs)
 
-Example: The conversion of IP addresses was implemented in a Java function called ip2int.What we have to do is to add the jar file with the compiled function to the Spark context, and then register a temporary function.  There's a problem though. You can't use a UDF implemented in such a way in the data frame API. The only option available is to use it in a SQL query.
+Example: The conversion of IP addresses was implemented in a Java function called ip2int. What we have to do is to add the jar file with the compiled function to the Spark context, and then register a temporary function. 
+There's a problem though. You can't use a UDF implemented in such a way in the dataframe API. 
+The only option available is to register a temporary function and to use it in a SQL query.
 ```
 spark.sql("CREATE TEMPORARY FUNCTION ip2int as
  'ru.mipt.udfs.IPToInt'")
@@ -173,42 +115,83 @@ query =
 spark.sql(query).count()
 ```
 
-## Catalist (Spark SQL)
+## Catalyst (Spark SQL)
 
-Catalyst is:
-- the Spark SQL query optimizer
-- a general library for representing trees and applying rules to manipulate them
-- libraries specific to relational query processing (e.g., expressions, logical query plans)
-- several sets of rules that handle different phases of query execution
+Catalyst is the Spark SQL query optimizer:
+- A general library for representing trees and applying rules to manipulate them
+- Contains libraries specific to relational query processing (e.g., expressions, logical query plans)
+- Contains several sets of rules that handle different phases of query execution
 
-Execution plans:
--  are represented as trees
+Execution plans are represented as trees:
 - 4 types of plans: Parsed Logical Plan, Analyzed Logical Plan, Optimized Logical Plan, Physical Plan
 -  Optimizations are transformations of trees. Ex. of transformations: Constant folding, Filter pushdown
-- Use `spark.sql(query).explain(True)` to see the different plans
+- Use `spark.sql(query).explain(True)` to see the different plans:
+    - Parsed logical plan
+    - Analyzed logical plan
+    - Optimized logical plan
+    - Physical plan
 
-Advice: Always look at the execution plan
+Advice: Always look at the execution plan:
 - Check filter pushdown. If there is no filter pushdown check configs for `spark.sql.parquet.filterPushdown` and `spark.sql.orc.filterPushdown`
 - Check join physical plan
 - Check pruned columns
 
 
+## Optimizing joins (Spark SQL)
+
+Join algorithms
+- Nested loop join: Universal algorithm. Slow! O(n*m)
+- Hash join: More efficient O(n + m). Only supports equi-join. Hash table uses memory (can’t be used for huge tables)
+- Sort-merge join: Between hash join and nested join O(n * log(n) + m * log(m)). Can be used for huge tables. Supports different join conditions (not only equi-joins). Join keys must be sortable.
+Can be slow when table size is small as it needs to shuffle and sort
+
+Types of physical plans
+- Broadcast join: Broadcasts smaller dataframe. It is fast as it does not shuffle or sort the data. Perform map side join
+- Shuffle hash join: `spark.sql.join.preferSortMergeJoin` is False.  Needs to shuffle, but not sort. Used when one side is ”much smaller” than the other so that a hash map can be build. 
+Will OOM if data is skewed. You can force it if you are sure
+- Sort-merge join (default): `spark.sql.join.preferSortMergeJoin` is True. Default join implementation. Keys must be sortable
+- Broadcast nested loop join (?)
+- Shuffle nested loop join (?)
+
+`spark.sql.autoBroadcastJoinThreshold = 10485760`
+Configures the maximum size in bytes for a table that will be broadcast
+
+`spark.sql.shuffle.partitions = 200`
+Configures the number of partitions to use when shuffling data for joins or aggregations (Does not help with skewed data)
+
+`repartition(numPartitions, *cols)`
+Shuffles data uniformly (helps for large joins)
+
+Broadcast hint
+```
+from pyspark.sql.functions import broadcast
+df1.join(broadcast(df2), on="join_column")
+```
+What can happen if you try to use the broadcast hint with the huge table?
+- Out of memory error on the executor: Broadcasting has to use the memory of the executor to store the table. If there is not enough memory the application will fail.
+- Broadcast timeout: There is an option spark.sql.broadcastTimeout which is 300 seconds by default. If broadcasting takes more time the application will fail
+
+
 ## Persisting and checkpointing
 
-Spark provides ways to store intermediate results (persist &
-checkpoint). Persisting is unreliable, checkpointing is reliable. Checkpointing is slow, persisting may be slow.
+Spark provides ways to store intermediate results: persist &
+checkpoint. These methods, compute the whole lineage graph and store the object in memory/disk.
+Persisting is unreliable (stores the objects in memory/disk), checkpointing is reliable (saves partitions to HDFS).
+Checkpointing is slow, persisting may be slow.
 
 Storage levels for persisting:
 - MEMORY_ONLY
-- MEMORY_ONLY_2
+- MEMORY_ONLY_2: 
 - MEMORY_AND_DISK
 - MEMORY_AND_DISK_2
 - DISK_ONLY
 - DISK_ONLY_2
 
+_Note: the storage levels with suffix `_2` provide some redundancy by providing some replicas on different nodes_
+
 Persistance tips:
-- MEMORY_ONLY if it fits
-- Recomputing may be as fast as reading from disk
+- Used MEMORY_ONLY if it fits
+- Be aware that recomputing may be as fast as reading from disk
 - Persist iterative algorithms (ML)
 
 Checkpointing:
@@ -216,11 +199,12 @@ Checkpointing:
 sc.setCheckpointDir("/hdfs_directory/")
 df.rdd.checkpoint()
 ```
+_Note: Spark only checkpoints RDDs_
 
 When to make a checkpoint?
 - Noisy cluster (lots of users compiting for resources)
 - Expensive and long computations
-- No way to checkpoint Dataframe
+
 
 ## Memory management
 
@@ -232,13 +216,15 @@ Tips:
 - If execution memory is full – spill to disk
 - If storage memory is full – evict LRU blocks
 - It is better to evict storage, not execution
-- If your app relies on caching, tune `spark.memory.storageFraction`
+- If your app relies on caching, tune `spark.memory.storageFraction` and `spark.executor.memory`
 
 ```
 spark.executor.memory = 1g
 Amount of memory to use per executor process
+
 spark.memory.fraction = 0.6
 Fraction of heap space used for execution and storage
+
 spark.memory.storageFraction = 0.5
 Amount of storage memory immune to eviction
 ```
@@ -260,9 +246,10 @@ There is also an application master. The application master is a container, whic
 
 
 ### Tips: 
-- Least granular executors can’t use JVM parallelism. If you allocate only one core to each executor, you can't use the benefits of JVM threads
-- Leave resources for OS and YARN daemons (1 core and 1G per node)
-- Need to leave resources for AM (1 container)
+- Use multiple cores per executor to benefit from JVM parallelism. If you allocate only one core to each executor, you can't use the benefits of JVM threads.
+However, it is not recommended to use too many cores per executor. Rule of thumb: use at  most five core per executor so that it can achieve full write throughput
+- Leave resources for OS and YARN daemons (1 core and 1Gb per node)
+- Leave resources for AM (1 container)
 - HDFS throughput is bounded by 5 cores (rule of thumb)
 - Leave resources for off-heap (use a factor of 0.9)
 
@@ -286,7 +273,7 @@ Dynamic allocation starts executors when needed and releases when not needed
 
 Why dynamic allocation?
 - MR uses short-lived containers for each task
-- Spark reuses long-running containers for speed (This may cause underutilization)
+- Spark reuses long-running containers for speed (This may cause under-utilization)
 
 Dynamic allocation requires tuning (Shuffle results should be stored in an external service)
 ```
@@ -314,7 +301,9 @@ More info: https://www.slideshare.net/databricks/dynamic-allocation-in-spark, ht
 
 ## Speculative execution
 
-Straggler: task which runs significantly slower than all the others. Causes:
+Straggler: task which runs significantly slower than all the others. 
+
+Causes for stragglers:
 - Equal workload, unequal resources: Speculative execution may help
 - Equal resources, unequal workload (Skew data causes false stragglers): Salting, repartition or custom partitioner might help
 - Bugs
@@ -322,14 +311,14 @@ Straggler: task which runs significantly slower than all the others. Causes:
 ### Configuring speculative execution:
 ```
 spark.speculation = false
-If set to "true", performs speculative execution of tasks
+# If set to "true", performs speculative execution of tasks
+
 spark.speculation.interval = 100ms
-spark.speculation.interval = 100ms
+
 spark.speculation.multiplier = 1.5
-spark.speculation.multiplier = 1.5
+
 spark.speculation.quantile = 0.75
-Fraction of tasks which must be complete before speculation is
-enabled for a particular stage
+# Fraction of tasks which must be complete before speculation is enabled for a particular stage
 ```
 
 ### Example configuring `spark.sql.shuffle.partitions` and using `DISTRIBUTE_BY`
@@ -351,4 +340,21 @@ Note : “Distribute By” doesn’t guarantee that data will be distributed eve
 
  ### Salting Technique
  
- "consider you have datasets consist of 4 unique keys out of which 1st key is having 2000 records ,2nd key is having 500 records ,3rd and 4th key is having 50 and 30 records respectively.This indicates if partitions is based on original key then we can observe imbalanced distribution of data across the partitions.In order to curb this situation we should modified our original keys to some modified keys whose hash partitioning cause the proper distributions of records among the partitions" Taken from: https://bigdatacraziness.wordpress.com/2018/01/05/oh-my-god-is-my-data-skewed/
+"Consider you have datasets consisting of 4 unique keys out of which 1st key is having 2000 records,
+2nd key is having 500 records, 3rd and 4th key is having 50 and 30 records respectively. This indicates
+if partitions is based on original key then we can observe imbalanced distribution of data across the partitions.
+In order to curb this situation we should modified our original keys to some modified keys whose hash partitioning cause
+the proper distributions of records among the partitions" Taken from: https://bigdatacraziness.wordpress.com/2018/01/05/oh-my-god-is-my-data-skewed/
+
+
+# II Hive tips
+
+Use:
+- Partitioning, bucketing and sorting to improve performance query
+- Built-in techniques to handle skewed data
+- Built-in UDF (User Defined Functions), UDAF (Aggregate functions), UDTF (Table-generating functions)
+- Columnar format for efficiencly space utilization (different compression algorithms can be applied to different types of data), fast data loading, fast query processing, strong adaptivity to highly dynamic workload patterns
+
+Recall: The difference between managed and external tables is that DROP TABLE statement, in managed tables, 
+will drop the table and delete table's data. Whereas, for external table DROP TABLE will drop only the table and data
+will remain as is and can be used for creating other tables over it.
