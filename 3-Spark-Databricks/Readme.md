@@ -1,4 +1,4 @@
-# Spark Databricks Training
+# Spark Databricks Training (2019)
 
 ## Context
 Hadoop: Map Reduce + HDFS. Disadvantage, map-reduce resilience imply a lot of IO disk: Ram->Disk->Ram. 
