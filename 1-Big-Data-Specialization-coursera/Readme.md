@@ -1,13 +1,15 @@
 _**Notes from Big data specialization from Coursera: https://www.coursera.org/learn/big-data-analysis/home/welcome**_
 
-# I Spark optimizations
+# I. Spark optimizations
 
-## Partitioning:
+## Spark Core (RDD)
 
-- Default partitioner uses key hashing (Alternative: range partitioner) 
+### Partitioning:
+
+- Default partitioner uses **key hashing** (Alternative: **range partitioner**) 
 - Co-partitioned RDDs reduce the volume of the shuffle
 - Co-located RDDs don’t shuffle
-- Preserve the partitioner to avoid shuffles
+- **Preserve the partitioner to avoid shuffles**
 
 RDDs are co-partitioned if they are partitioned by the same
 known partitioner:
@@ -60,12 +62,12 @@ ranks.collect()
 True
 ```
 
-Tips for optimization:
+**Hints for optimization**:
 - Specify number of partitions when appropriate with partitionBy(n) or numPartitions argument
 - Use known partitioner to reduce shuffles
 - When creating an RDD from another, use `preservePartitioning=True` if the transformation does not change the keys
 
-## Serialization: Transfer data and code
+### Serialization: Transfer data and code
 
 Serialization is the process of translating data structures or object state into a format that can be stored (for example, in a file or memory buffer, or transmitted across a network connection link) and reconstructed later in the same or another computer environment
 
@@ -73,7 +75,7 @@ Serializers:
 - Java – slow, but robust
 - Kryo – fast, but has corner cases `conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")`
 
-## Functions optimization
+### Functions optimization
 
 - Avoid initializing objects inside your functions. Ideally, initialise objects only once on the driver 
 - Broadcast variables to reduce initialization overhead. Broadcasting distributes the object across executors
@@ -89,16 +91,21 @@ def myfunc(row_iter):
  ```
 
  
-# Spark UDFs (Spark SQL)
+## Spark SQL
 
-Using UDFs forces serialization. What are the alternative options?
-- pyspark.sql.functions
-- Hive UDFs/UDAFs
-- Scala or Java (Extend Spark SQL via UDFs/UDAFs)
+### Spark UDFs 
 
-Example: The conversion of IP addresses was implemented in a Java function called ip2int. What we have to do is to add the jar file with the compiled function to the Spark context, and then register a temporary function. 
-There's a problem though. You can't use a UDF implemented in such a way in the dataframe API. 
-The only option available is to register a temporary function and to use it in a SQL query.
+**Hint**: When possible use Spark built-in functions instead of UDFs.
+
+Using UDFs forces serialization.
+
+If there is no option but to use a UDF, what can be done to improve performance?
+- Use Hive UDFs/UDAFs
+- Extend Spark SQL via UDFs/UDAFs written in Scala or Java
+
+Example: The function `ip2int` implements the required functionality. What needs to be done is to add the jar file with the compiled function to the Spark context, and then register a temporary function. 
+There's a problem though: A UDF implemented in such a way can not in the dataframe API. 
+The only option available is to **register a temporary function** and to use it in a SQL query.
 ```
 spark.sql("CREATE TEMPORARY FUNCTION ip2int as
  'ru.mipt.udfs.IPToInt'")
@@ -115,7 +122,7 @@ query =
 spark.sql(query).count()
 ```
 
-## Catalyst (Spark SQL)
+### Catalyst 
 
 Catalyst is the Spark SQL query optimizer:
 - A general library for representing trees and applying rules to manipulate them
@@ -137,32 +144,30 @@ Advice: Always look at the execution plan:
 - Check pruned columns
 
 
-## Optimizing joins (Spark SQL)
+### Optimizing joins
 
 Join algorithms
-- Nested loop join: Universal algorithm. Slow! O(n*m)
-- Hash join: More efficient O(n + m). Only supports equi-join. Hash table uses memory (can’t be used for huge tables)
-- Sort-merge join: Between hash join and nested join O(n * log(n) + m * log(m)). Can be used for huge tables. Supports different join conditions (not only equi-joins). Join keys must be sortable.
+- **Nested loop join**: Naive algorithm that joins two tables by using two nested loops. Slow! O(n*m)
+- **Hash join**: Build a hash table with the smallest table and  loop over the other table to find the relevant rows by looking into the hash table. More efficient: O(n + m). Only supports equi-join. Hash table uses memory (can’t be used for huge tables). Does not support full-outer join
+- **Sort-merge join**: Sort the tables based on the join keys and then merge them. Complexity between hash join and nested join: O(n * log(n) + m * log(m)). Can be used for huge tables. Supports different join conditions (not only equi-joins). Join keys must be sortable.
 Can be slow when table size is small as it needs to shuffle and sort
 
 Types of physical plans
-- Broadcast join: Broadcasts smaller dataframe. It is fast as it does not shuffle or sort the data. Perform map side join
-- Shuffle hash join: `spark.sql.join.preferSortMergeJoin` is False.  Needs to shuffle, but not sort. Used when one side is ”much smaller” than the other so that a hash map can be build. 
-Will OOM if data is skewed. You can force it if you are sure
-- Sort-merge join (default): `spark.sql.join.preferSortMergeJoin` is True. Default join implementation. Keys must be sortable
-- Broadcast nested loop join (?)
-- Shuffle nested loop join (?)
+- **Broadcast hash join**: Broadcast smaller dataframe to all worker nodes and use the hash join to perform the join. It is fast as it does not shuffle or sort the data. `spark.sql.autoBroadcastJoinThreshold`
+configures the maximum size in bytes for a table that will be broadcasted (default: 10485760)
+- **Shuffle hash join**: Shuffle the data to get the same keys in the same executors. Implemented when `spark.sql.join.preferSortMergeJoin` is False.  It should be used when one table is ”much smaller” than the other so that a hash map can be build on each executor. 
+Will OOM if data is skewed. You can force it if you need it
+- **Shuffle Sort-merge join (default)**:  Shuffle the data to get the same keys in the same executors and perform sort-merge-join. Used when `spark.sql.join.preferSortMergeJoin` is True. Default join implementation. Keys must be sortable
+- **Broadcast nested loop join**: Broadcast the smaller dataframe to all worker nodes and use the nested loop join. Useful for other joins different to equi-join and full outer join
+- **Shuffle nested loop join**: Shuffle the data to get the same keys in the same executors and use the nested loop join. Used when both tables are large and the keys are not sortable
 
-`spark.sql.autoBroadcastJoinThreshold = 10485760`
-Configures the maximum size in bytes for a table that will be broadcast
 
-`spark.sql.shuffle.partitions = 200`
-Configures the number of partitions to use when shuffling data for joins or aggregations (Does not help with skewed data)
-
-`repartition(numPartitions, *cols)`
-Shuffles data uniformly (helps for large joins)
-
-Broadcast hint
+**Hints for optimization**:
+- When the smaller table fits completely into the memory of each executor, and the driver, use broadcast hint or tune `spark.sql.autoBroadcastJoinThreshold`
+- Consider forcing the shuffle hash join when the data is not skewed, and one table is smaller than the other
+- Configure the number of partitions to use when shuffling data for joins or aggregations with `spark.sql.shuffle.partitions = 200`  (Does not help with skewed data)
+- Shuffle data uniformly with `repartition(numPartitions, *cols)` (helps for large joins)
+#### Broadcast hint
 ```
 from pyspark.sql.functions import broadcast
 df1.join(broadcast(df2), on="join_column")
@@ -171,6 +176,26 @@ What can happen if you try to use the broadcast hint with the huge table?
 - Out of memory error on the executor: Broadcasting has to use the memory of the executor to store the table. If there is not enough memory the application will fail.
 - Broadcast timeout: There is an option spark.sql.broadcastTimeout which is 300 seconds by default. If broadcasting takes more time the application will fail
 
+
+### Use of window functions
+
+**Hint**: When the partition column has a high cardinality, use `window` functions.
+
+Example: Add a column with max. temperature for every city:
+```
+w = Window().partitionBy("city")
+df = df.withColumn("max_temp", f.max(f.col("temperature")).over(w))
+```
+**Hint**: When the partition column has a low cardinality, use `groupby` and then `join` with the broadcast hint
+```
+df_max = df.groupby("country").agg(f.max("temperature").alias("max_temp"))
+df = df.join(broadcast(df_max))
+```
+
+### Miscelaneous
+
+- Save intermediate tables when appropiate
+- Use the dataframe API instead of sql queries to catch errors at compile time and not at run time
 
 ## Persisting and checkpointing
 
@@ -197,9 +222,8 @@ Persistance tips:
 Checkpointing:
 ```
 sc.setCheckpointDir("/hdfs_directory/")
-df.rdd.checkpoint()
+df.checkpoint()
 ```
-_Note: Spark only checkpoints RDDs_
 
 When to make a checkpoint?
 - Noisy cluster (lots of users compiting for resources)
@@ -347,7 +371,7 @@ In order to curb this situation we should modified our original keys to some mod
 the proper distributions of records among the partitions" Taken from: https://bigdatacraziness.wordpress.com/2018/01/05/oh-my-god-is-my-data-skewed/
 
 
-# II Hive tips
+# II. Hive tips
 
 Use:
 - Partitioning, bucketing and sorting to improve performance query
