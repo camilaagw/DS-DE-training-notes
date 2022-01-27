@@ -9,7 +9,10 @@ Solutions to the courses are held in a private repository, but do not hessitate 
 
 Coding:
 - [Awesome-resources](https://github.com/georgegognadze/awesome-resources): Links to coding and learning resources for everyone.
+
+Spark:
 - [pyspark-style-guide](https://github.com/palantir/pyspark-style-guide): Pyspark-style-guide from Palantir.
+- [Higher-Order Functions tutorial](https://docs.databricks.com/_static/notebooks/higher-order-functions-tutorial-python.html): Databricks tutotial on Higher-Order Functions and Lambda Expressions.
 
 ML and data analysis:
 - [Fivethirtyeight data](https://github.com/fivethirtyeight/data): Datasets used for https://data.fivethirtyeight.com/.
