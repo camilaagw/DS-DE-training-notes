@@ -17,6 +17,8 @@ Spark:
 ML and data analysis:
 - [Fivethirtyeight data](https://github.com/fivethirtyeight/data): Datasets used for https://data.fivethirtyeight.com/.
 - [handson-ml](https://github.com/ageron/handson-ml): Extremely well crafted collection of example code and solutions to the exercises in the book Hands-on Machine Learning with Scikit-Learn and TensorFlow (written by the author).
+- [prettymaps](https://github.com/marceloprates/prettymaps): A minimal Python library to draw customized maps from OpenStreetMap.
 
 Engineering:
 - [System-design-primer](https://github.com/donnemartin/system-design-primer): Mindblowing  collection of resources to learn how to build systems at scale.
+- [Post by a16z](https://future.a16z.com/emerging-architectures-modern-data-infrastructure/): Emerging Architectures for Modern Data Infrastructure. Oct. 2020.
