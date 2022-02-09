@@ -5,7 +5,7 @@ Collection of notes from different courses, trainings, tutorials in the areas of
 Solutions to the courses are held in a private repository, but do not hessitate to contact me in case you require some support :).
 
 
-## Cool resources for learning:
+## Cool resources:
 
 Coding:
 - [Awesome-resources](https://github.com/georgegognadze/awesome-resources): Links to coding and learning resources for everyone.
@@ -21,7 +21,8 @@ ML and data analysis:
 
 Data Visualization:
 - [prettymaps](https://github.com/marceloprates/prettymaps): A minimal Python library to draw customized maps from OpenStreetMap.
-- [scientific-visualization-book](https://github.com/rougier/scientific-visualization-book): An open access book on scientific visualization using python and matplotlib
+- [scientific-visualization-book](https://github.com/rougier/scientific-visualization-book): An open access book on scientific visualization using python and matplotlib.
+- [Matplotlib alternative-apis](https://matplotlib.org/mpl-third-party/#alternative-apis): A list of packages that extend Matplotlib.
 
 Engineering:
 - [System-design-primer](https://github.com/donnemartin/system-design-primer): Mindblowing  collection of resources to learn how to build systems at scale.
