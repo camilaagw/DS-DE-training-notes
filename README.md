@@ -17,7 +17,10 @@ Spark:
 ML and data analysis:
 - [Fivethirtyeight data](https://github.com/fivethirtyeight/data): Datasets used for https://data.fivethirtyeight.com/.
 - [handson-ml](https://github.com/ageron/handson-ml): Extremely well crafted collection of example code and solutions to the exercises in the book Hands-on Machine Learning with Scikit-Learn and TensorFlow (written by the author).
+
+Data Visualization:
 - [prettymaps](https://github.com/marceloprates/prettymaps): A minimal Python library to draw customized maps from OpenStreetMap.
+- [scientific-visualization-book](https://github.com/rougier/scientific-visualization-book): An open access book on scientific visualization using python and matplotlib
 
 Engineering:
 - [System-design-primer](https://github.com/donnemartin/system-design-primer): Mindblowing  collection of resources to learn how to build systems at scale.
