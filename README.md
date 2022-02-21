@@ -13,6 +13,7 @@ Coding:
 Spark:
 - [pyspark-style-guide](https://github.com/palantir/pyspark-style-guide): Pyspark-style-guide from Palantir.
 - [Higher-Order Functions tutorial](https://docs.databricks.com/_static/notebooks/higher-order-functions-tutorial-python.html): Databricks tutotial on Higher-Order Functions and Lambda Expressions.
+- [Azure Databricks Notebooks](https://github.com/solliancenet/microsoft-learning-paths-databricks-notebooks/tree/master/data-engineering/DBC): Collection of databricks notebooks explaining different topics (to see them a community eddition account is needed).
 
 ML and data analysis:
 - [Fivethirtyeight data](https://github.com/fivethirtyeight/data): Datasets used for https://data.fivethirtyeight.com/.
