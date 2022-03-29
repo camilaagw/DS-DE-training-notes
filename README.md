@@ -21,6 +21,8 @@ ML and data analysis:
 - [Fivethirtyeight data](https://github.com/fivethirtyeight/data): Datasets used for https://data.fivethirtyeight.com/.
 - [handson-ml](https://github.com/ageron/handson-ml): Extremely well crafted collection of example code and solutions to the exercises in the book Hands-on Machine Learning with Scikit-Learn and TensorFlow (written by the author).
 - [Machine Learning Algorithms Cheat Sheet](https://medium.com/accel-ai/machine-learning-algorithms-cheat-sheet-990104aaaabc): Machine Learning Algorithms Cheat Sheet by LatinX in AI™.
+- [Made with ML](https://github.com/GokuMohandas/MadeWithML): Notes on ML and MLOps
+- [Interactive tools for ML](https://github.com/Machine-Learning-Tokyo/Interactive_Tools): Interactive Tools for machine learning, deep learning, and math.
 
 Data Visualization:
 - [prettymaps](https://github.com/marceloprates/prettymaps): A minimal Python library to draw customized maps from OpenStreetMap.
