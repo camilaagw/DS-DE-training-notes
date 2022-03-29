@@ -15,7 +15,7 @@ Spark - Big Data:
 - [Higher-Order Functions tutorial](https://docs.databricks.com/_static/notebooks/higher-order-functions-tutorial-python.html): Databricks tutotial on Higher-Order Functions and Lambda Expressions.
 - [Azure Databricks Notebooks](https://github.com/solliancenet/microsoft-learning-paths-databricks-notebooks/tree/master/data-engineering/DBC): Collection of databricks notebooks explaining different topics (to see them a community eddition account is needed).
 - [“The Internals Of” Online Books project](https://books.japila.pl/): Collection of online books exploring the internals of various open source projects. By Jacek Laskowski.
-- [Uber Case Study: Choosing the Right HDFS File Format for Your Apache Spark Jobs](https://eng.uber.com/hdfs-file-format-apache-spark/) 
+- [Uber Case Study: Choosing the Right HDFS File Format for Your Apache Spark Jobs](https://eng.uber.com/hdfs-file-format-apache-spark/): Article comparing diferent file formats and their usages.
 
 ML and data analysis:
 - [Fivethirtyeight data](https://github.com/fivethirtyeight/data): Datasets used for https://data.fivethirtyeight.com/.
