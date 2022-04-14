@@ -15,7 +15,7 @@ If there is no option but to use a UDF, what can be done to improve performance?
 - **Extend Spark SQL via UDFs/UDAFs written in Scala or Java**
 
 Example: The function `ip2int` implements the required functionality. What needs to be done is to add the jar file with the compiled function to the Spark context, and then register a temporary function. 
-There's a problem though: A UDF implemented in such a way can not in the dataframe API. 
+There's a problem though: A UDF implemented in such a way can not be used in the dataframe API. 
 The only option available is to **register a temporary function** and to use it in a SQL query.
 ```
 spark.sql("CREATE TEMPORARY FUNCTION ip2int as
