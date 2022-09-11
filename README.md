@@ -9,6 +9,7 @@ Solutions to the courses are held in a private repository, but do not hessitate 
 
 Coding:
 - [Awesome-resources](https://github.com/georgegognadze/awesome-resources): Links to coding and learning resources for everyone.
+- [A-picture-is-worth-a-1000-words](https://github.com/girliemac/a-picture-is-worth-a-1000-words): Beautiful illustrations on some SW fundamentals: Data structures, algorithms, version control, etc (recommended as inspiration for teaching material).
 
 Spark - Big Data:
 - [pyspark-style-guide](https://github.com/palantir/pyspark-style-guide): Pyspark-style-guide from Palantir.
