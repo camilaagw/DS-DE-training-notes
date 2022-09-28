@@ -17,7 +17,7 @@ Big Data:
 - [Azure Databricks Notebooks](https://github.com/solliancenet/microsoft-learning-paths-databricks-notebooks/tree/master/data-engineering/DBC): Collection of databricks notebooks explaining different topics (to see them a community eddition account is needed).
 - [“The Internals Of” Online Books project](https://books.japila.pl/): Collection of online books exploring the internals of various open source projects. By Jacek Laskowski.
 - [Uber Case Study: Choosing the Right HDFS File Format for Your Apache Spark Jobs](https://eng.uber.com/hdfs-file-format-apache-spark/): Article comparing diferent file formats and their usages.
-- [Reduce Python memory usage](https://pythonspeed.com/datascience/#memory): Article on various strategies used to reduce memory usage in Python.
+- [Speed up your data science and scientific computing code](https://pythonspeed.com/datascience/#memory): Article on various strategies used to reduce memory usage and to speed up code in Python.
 
 ML and data analysis:
 - [Fivethirtyeight data](https://github.com/fivethirtyeight/data): Datasets used for https://data.fivethirtyeight.com/.
