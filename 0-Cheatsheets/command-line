@@ -1,0 +1,3 @@
+- `pbpaste`: Paste the output contents from your clipboard.
+- `pbcopy`: Copy the output of a command right into your clipboard: `$ cat myfile.txt | pbcopy`.
+- `jq`: Command-line JSON processor. Useful for processing API responses.
