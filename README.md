@@ -35,3 +35,4 @@ Engineering:
 - [System-design-primer](https://github.com/donnemartin/system-design-primer): Mindblowing  collection of resources to learn how to build systems at scale.
 - [Post by a16z](https://future.a16z.com/emerging-architectures-modern-data-infrastructure/): Emerging Architectures for Modern Data Infrastructure. Oct. 2020.
 - [crack-the-system-design-interview](https://tianpan.co/notes/2016-02-13-crack-the-system-design-interview): A collection of system design use cases.
+- [System Design PDFS Byte Byte Go](https://blog.bytebytego.com/p/free-system-design-pdf-158-pages): Useful summaries of System Design ([Big Archive personal link](https://drive.google.com/drive/folders/1iSJL5-4F4GFc6iIEsalr3K2FMusehZeo)).
