@@ -8,3 +8,17 @@ for credential in credential_names:
   if credential not in os.environ:
      os.environ[credential] = getpass.getpass("Provide your " + credential)
 ```
+
+### rich
+Friendly Debugging with Rich:
+```
+from rich import inspect
+
+fig, ax = plt.subplots()
+plt.close()
+
+inspect(fig)
+# to see the methods of the object
+# inspect(fig, methods=True)
+inspect(ax)
+```
