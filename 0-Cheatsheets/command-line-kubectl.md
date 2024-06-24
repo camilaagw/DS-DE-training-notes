@@ -11,6 +11,16 @@ List running pods: <br>
 $ `kubectl get pods --sort-by=.metadata.creationTimestamp -l org=<org>,env=<env>`<br>
 Optionally add `--field-selector status.phase=Running`
 
+List other components
+$ `kubectl get deployments` <br>
+$ `kubectl get services` <br>
+$ `kubectl get configmap` 
+
+Delete components: <br>
+$ `kubectl delete deployment <deployment-name> --namespace=<namespace>`  <br>
+$ `kubectl delete service <service-name> --namespace=<namespace>`  <br>
+$ `kubectl delete configmap <configmap-name> --namespace=<namespace>`
+
 Port-forwarding:<br>
 With eg. `<id>=service/postgres`, `<local>=2067`, `<remote>=5432` <br>
 $ `kubectl port-forward <id> <local>:<remote>`
