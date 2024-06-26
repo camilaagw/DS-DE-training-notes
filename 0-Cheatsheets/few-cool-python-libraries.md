@@ -11,7 +11,7 @@ for credential in credential_names:
 
 ### rich
 Friendly Debugging with Rich:
-```
+```python
 from rich import inspect
 
 fig, ax = plt.subplots()
