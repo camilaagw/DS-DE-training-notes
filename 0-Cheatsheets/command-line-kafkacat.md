@@ -1,6 +1,8 @@
 Consume messages from a Kafka topic using kcat, formerly known as kafkacat:
 
+```bash
 kcat -C -s avro -r <REGISTRY-NAME> -t <TOPIC-NAME> -o -10
+```
 
 - `kcat -C`: The `kcat` command with the `-C` flag is used to consume messages from a Kafka topic.
 - `-s avro`: The `-s` flag indicates the serialization format used by the topic. In this case, `avro` is the serialization format.
