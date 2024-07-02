@@ -1,9 +1,12 @@
 ### Basic Docker commands
 
 TODO 
+
 ### Colima: One-stop Docker solution
 
-* Install Colima itself: `brew install colima`
+If you are in search for a solution alternative to Docker Desktop, Colima is the solution. It is lightweight, fast, and open-source docker runtime without licensing restrictions.
+
+* Install Colima: `brew install colima`
 
 * Adjust CPU, memory and disk limits as needed:
 
@@ -19,7 +22,7 @@ After creation, you can manage the VM with the commands `colima list`, `colima s
 
 ### Lima: Going beyond Colima
 
-In case want more control on your setup or manage several linux VMs, you can use Lima directly, in addition to Colima or not.
+In case you want more control on your setup or manage several linux VMs, you can use Lima directly, in addition to Colima or not.
 ```bash
 $ limactl create --vm-type=vz --network=vzNAT --rosetta # Use the VZ hypervisor on Apple silicon
 $ limactl start default
