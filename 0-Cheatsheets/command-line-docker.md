@@ -1,3 +1,6 @@
+### Basic Docker commands
+
+TODO 
 ### Colima: One-stop Docker solution
 
 * Install Colima itself: `brew install colima`
